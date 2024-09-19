@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.5.6</version>
+	</parent>
+
+	<groupId>com.draiver</groupId>
+	<artifactId>draiver-build-parent_microservice-maven</artifactId>
+	<version>0.0.21-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>draiver-build-parent_microservice-maven</name>
+	<description>Parent POM used to bootstrap development of Draiver Microservices</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+
+		<nexus.fetch>false</nexus.fetch>
+		<aws.deploy.skip>true</aws.deploy.skip>
+		<aws.profile>nonprod</aws.profile>
+		<aws.s3.uploadBucket>draiver-devops-eb-upload</aws.s3.uploadBucket>
+
+		<!-- LEAVING BLANK SO BUILD PIPELINE CAN SUPPLY WITH -D -->
+		<aws.beanstalk.solutionStackName></aws.beanstalk.solutionStackName>
+
+		<aws.beanstalk.applicationName>${consul.application.name}</aws.beanstalk.applicationName>
+
+		<aws.beanstalk.createApplication.sleep.seconds>30</aws.beanstalk.createApplication.sleep.seconds>
+		<aws.beanstalk.updateApplication.sleep.seconds>30</aws.beanstalk.updateApplication.sleep.seconds>
+
+		<draiver.ci.url>${draiver.ci.url.prefix}/${project.artifactId}</draiver.ci.url>
+		<draiver.ci.url.prefix>https://jenkins.draiver.net/job/</draiver.ci.url.prefix>
+		<draiver.issue.url>https://draiver.atlassian.net/secure/BrowseProjects.jspa</draiver.issue.url>
+
+
+
+		<root>..</root>
+		<suffix />
+
+		<sonar.exclusions>**/Test.java</sonar.exclusions>
+		<sonar.coverage.exclusions>**/com/draiver/**/domain/**/*.*</sonar.coverage.exclusions>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>			
+			<dependency>
+				<groupId>com.draiver</groupId>
+				<artifactId>draiver-build-dependency_thirdparty-maven</artifactId>
+				<version>0.0.10</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<!--  <version>6.1.1.RELEASE</version> -->
+		</dependency>
+		<dependency>
+			<groupId>es.moki.ratelimitj</groupId>
+			<artifactId>ratelimitj-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<!-- Setup Spring Boot -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<!-- Setup Spring MVC & REST, use Embedded Tomcat -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<resources>
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+
+		<testResources>
+			<testResource>
+				<filtering>true</filtering>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.github.ekryd.sortpom</groupId>
+					<artifactId>sortpom-maven-plugin</artifactId>
+					<version>2.11.0</version>
+					<configuration>
+						<createBackupFile>false</createBackupFile>
+						<predefinedSortOrder>custom_1</predefinedSortOrder>
+						<lineSeparator>\n</lineSeparator>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<sortProperties>true</sortProperties>
+						<keepBlankLines>true</keepBlankLines>
+						<sortDependencies>groupId,artifactId,scope</sortDependencies>
+						<nrOfIndentSpace>-1</nrOfIndentSpace>
+						<expandEmptyElements>false</expandEmptyElements>
+						<sortPlugins>groupId,artifactId</sortPlugins>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>sort</goal>
+							</goals>
+							<phase>verify</phase>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.0.0-M3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>3.0.0-M1</version>
+					<inherited>true</inherited>
+					<configuration>
+						<tagBase>${pet.svn.tagbase}</tagBase>
+						<checkModificationExcludes>
+							<checkModificationExclude>pom.xml</checkModificationExclude>
+						</checkModificationExcludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.7.0.1746</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.0.0</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>logs</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M4</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<delimiters>
+						<delimiter>@</delimiter>
+					</delimiters>
+					<useDefaultDelimiters>false</useDefaultDelimiters>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<configuration>
+					<argLine>${argLine} </argLine>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.7</version>
+				<configuration>
+					<excludes>
+						<exclude>com/draiver/**/domain/*</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>coverage-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>coverage-report</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!-- This applies a regex pattern to the artifactId and strips -java 
+					from the end to be used by consul.applicaiton.name -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>consul.application.name</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>consul.application.name</name>
+							<value>${project.artifactId}</value>
+							<regex>^(.*)-java$</regex>
+							<replacement>$1</replacement>
+							<failIfNoMatch>false</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.1.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.0.0</version>
+				<configuration>
+					<xmlOutput>true</xmlOutput>
+					<!-- Optional directory to put spotbugs xdoc xml report -->
+					<xmlOutputDirectory>target/site</xmlOutputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<inceptionYear>2020</inceptionYear>
+
+	<organization>
+		<name>Draiver LLC</name>
+		<url>http://www.draiver.com</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Draiver Software License</name>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>draiver-jfayling</id>
+			<name>Jason Fayling</name>
+			<email>jason.fayling@draiver.com</email>
+			<url>https://github.com/draiver-jfayling</url>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<name>Draiver Developers</name>
+			<post>developers@draiver.com</post>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:git://github.com/DriverDo/${project.artifactId}.git</connection>
+		<developerConnection>scm:git:git@github.com:DriverDo/${project.artifactId}.git</developerConnection>
+		<url>https://github.com/DriverDo/${project.artifactId}</url>
+	</scm>
+
+	<issueManagement>
+		<system>JIRA</system>
+		<url>${draiver.issue.url}</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>${draiver.ci.url}</url>
+	</ciManagement>
+
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>draiver Internal Repository</name>
+			<url>https://nexus.draiver.net/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot.repo</id>
+			<name>draiver snapshot</name>
+			<url>https://nexus.draiver.net/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>internal.repo</id>
+			<name>Draiver Internal Repository</name>
+			<url>https://nexus.draiver.net/repository/maven-releases/</url>
+		</repository>
+		<repository>
+			<id>snapshot.repo</id>
+			<name>Draiver snapshot</name>
+			<url>https://nexus.draiver.net/repository/maven-snapshots/</url>
+		</repository>
+	</repositories>
+
+
+	<profiles>
+
+		<profile>
+			<id>noTests</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+		</profile>
+		<profile>
+			<id>envPR</id>
+			<properties>
+				<nexus.fetch>false</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>nonprod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-${branch.name}</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkNonProdDev.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}-pr</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-nonprod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+		<profile>
+			<id>envDEV</id>
+			<properties>
+				<nexus.fetch>false</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>nonprod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-dev</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkNonProdDev.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}-dev</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-nonprod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>envQA</id>
+			<properties>
+				<nexus.fetch>false</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>nonprod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-qa</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkNonProdQa.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}-qa</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-nonprod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>envSTAGING</id>
+			<properties>
+				<nexus.fetch>true</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>prod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-staging</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkProdStaging.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-prod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>envPROD</id>
+			<properties>
+				<nexus.fetch>true</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>prod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-prod</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkProdProd.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-prod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>envPROD-GREEN</id>
+			<properties>
+				<nexus.fetch>true</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>prod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-prod-green</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkProdProdGreen.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-prod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>envPROD-BLUE</id>
+			<properties>
+				<nexus.fetch>true</nexus.fetch>
+				<aws.deploy.skip>false</aws.deploy.skip>
+				<aws.profile>prod</aws.profile>
+				<aws.beanstalk.environmentName>${aws.beanstalk.applicationName}-prod-blue</aws.beanstalk.environmentName>
+				<aws.beanstalk.configFile>beanstalkProdProdBlue.config</aws.beanstalk.configFile>
+				<aws.beanstalk.versionLabel>${project.version}</aws.beanstalk.versionLabel>
+				<aws.s3.uploadBucket>draiver-prod-devops-eb-upload</aws.s3.uploadBucket>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>beanstalk-get_loadbalancer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>validate</id>
+								<phase>validate</phase>
+								<configuration>
+									<target>
+
+										<taskdef
+											resource="net/sf/antcontrib/antcontrib.properties" />
+
+										<if>
+											<and>
+												<equals arg1="${project.packaging}" arg2="jar" />
+											</and>
+											<then>
+												<echo>------- LOAD BALANCER ---------</echo>
+												<exec executable="aws" failonerror="true">
+													<arg
+														line="elasticbeanstalk describe-environment-resources --environment-name ${aws.beanstalk.environmentName} --query 'EnvironmentResources.[LoadBalancers]' --output text --profile ${aws.profile} " />
+												</exec>
+												<echo>-----------------------</echo>
+											</then>
+											<else>
+												<echo>aws.deploy.skip was set to true or packaging is not a
+													JAR, so skipping deploy.zip</echo>
+											</else>
+										</if>
+
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<artifactId>ant</artifactId>
+										<groupId>ant</groupId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>beanstalk-get_cname</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>validate</id>
+								<phase>validate</phase>
+								<configuration>
+									<target>
+
+										<taskdef
+											resource="net/sf/antcontrib/antcontrib.properties" />
+
+										<if>
+											<and>
+												<equals arg1="${project.packaging}" arg2="jar" />
+											</and>
+											<then>
+												<echo>------- CNAME ---------</echo>
+												<exec executable="aws" failonerror="true">
+													<arg
+														line="elasticbeanstalk describe-environments --environment-name ${aws.beanstalk.environmentName} --query 'Environments[].[CNAME][]' --output text --profile ${aws.profile} " />
+												</exec>
+												<echo>-----------------------</echo>
+											</then>
+											<else>
+												<echo>aws.deploy.skip was set to true or packaging is not a
+													JAR, so skipping deploy.zip</echo>
+											</else>
+										</if>
+
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<artifactId>ant</artifactId>
+										<groupId>ant</groupId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>beanstalk-deploy</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>prepare</id>
+								<phase>package</phase>
+								<configuration>
+									<target>
+
+										<taskdef
+											resource="net/sf/antcontrib/antcontrib.properties" />
+
+										<if>
+											<and>
+												<equals arg1="${aws.deploy.skip}" arg2="false" />
+												<equals arg1="${project.packaging}" arg2="jar" />
+											</and>
+											<then>
+												<mkdir dir="${project.build.directory}/deploy" />
+												<copy todir="${project.build.directory}/deploy"
+													overwrite="false">
+													<fileset dir="./" includes=".ebextensions/**" />
+													<fileset dir="./" includes=".platform/**" />
+												</copy>
+
+												<echo>NEXUS FETCH = ${nexus.fetch}</echo>
+												<echo>Beanstalk Version Label = ${aws.beanstalk.versionLabel}</echo>
+
+												<if>
+													<equals arg1="${nexus.fetch}" arg2="true" />
+													<then>
+														<echo>Downloading from nexus - https://nexus.draiver.net/repository/draiver-maven-group/com/draiver/${project.artifactId}/${project.version}/${project.artifactId}-${project.version}.jar to ${project.build.directory}/deploy</echo>
+														<get src="https://nexus.draiver.net/repository/draiver-maven-group/com/draiver/${project.artifactId}/${project.version}/${project.artifactId}-${project.version}.jar" dest="${project.build.directory}/deploy"/>
+													</then>
+													<else>
+														<echo>Using target contents instead of nexus</echo>
+														<copy todir="${project.build.directory}/deploy"
+															overwrite="false">
+															<fileset dir="${project.build.directory}"
+																includes="${project.build.finalName}.jar" />
+														</copy>
+													</else>
+												</if>
+	
+												<zip compress="false"
+													destfile="${project.build.directory}/${project.build.finalName}.zip"
+													basedir="${project.build.directory}/deploy" />
+	
+												<delete dir="${project.build.directory}/deploy" />
+
+												<!-- create s3 bucket -->
+												<trycatch>
+													<try>
+														<echo>Calling command</echo>
+														<echo>s3 mb s3://${aws.s3.uploadBucket} --profile
+															${aws.profile}</echo>
+														<exec executable="aws" failonerror="true">
+															<arg
+																line="s3 mb s3://${aws.s3.uploadBucket} --profile ${aws.profile}" />
+														</exec>
+													</try>
+													<catch>
+														<echo>${aws.s3.uploadBucket} exists or could not create it</echo>
+													</catch>
+												</trycatch>
+
+												<echo>uploading zip file. this can take a few minutes...</echo>
+
+												<!-- upload binary to s3 -->
+												<echo>Calling command</echo>
+												<echo>s3 cp
+													${project.build.directory}/${project.build.finalName}.zip
+													s3://${aws.s3.uploadBucket} --no-progress --profile
+													${aws.profile}</echo>
+												<exec executable="aws" failonerror="true">
+													<arg
+														line="s3 cp ${project.build.directory}/${project.build.finalName}.zip s3://${aws.s3.uploadBucket} --no-progress --profile ${aws.profile}" />
+												</exec>
+
+												<echo>creating/updating beanstalk application...</echo>
+
+												<!-- create/update application -->
+												<trycatch>
+													<try>
+														<echo>Attempting to create application</echo>
+														<echo>elasticbeanstalk create-application-version
+															--auto-create-application --source-bundle
+															S3Bucket=${aws.s3.uploadBucket},S3Key=${project.build.finalName}.zip
+															--application-name ${aws.beanstalk.applicationName}
+															--version-label ${aws.beanstalk.versionLabel} --profile
+															${aws.profile}</echo>
+														<exec executable="aws" failonerror="true">
+															<arg
+																line="elasticbeanstalk create-application-version --auto-create-application --source-bundle S3Bucket=${aws.s3.uploadBucket},S3Key=${project.build.finalName}.zip --application-name ${aws.beanstalk.applicationName} --version-label ${aws.beanstalk.versionLabel} --profile ${aws.profile}" />
+														</exec>
+														<echo>Waiting ${aws.beanstalk.createApplication.sleep.seconds} seconds for create to happen</echo>
+														<sleep seconds="${aws.beanstalk.createApplication.sleep.seconds}" />
+													</try>
+													<catch>
+														<echo>Application exists, so updating</echo>
+														<echo>elasticbeanstalk update-application-version
+															--application-name ${aws.beanstalk.applicationName}
+															--version-label ${aws.beanstalk.versionLabel} --profile
+															${aws.profile}</echo>
+														<exec executable="aws" failonerror="true">
+															<arg
+																line="elasticbeanstalk update-application-version --application-name ${aws.beanstalk.applicationName} --version-label ${aws.beanstalk.versionLabel} --profile ${aws.profile}" />
+														</exec>
+														<echo>Waiting ${aws.beanstalk.updateApplication.sleep.seconds} seconds for update to happen</echo>
+														<sleep seconds="${aws.beanstalk.updateApplication.sleep.seconds}" />
+													</catch>
+												</trycatch>
+
+												<echo>creating/updating beanstalk environment...</echo>
+
+												<!-- create/update environment -->
+												<trycatch>
+													<try>
+														<echo>Attempting to create environment</echo>
+														<echo>elasticbeanstalk create-environment
+															--option-settings file://${aws.beanstalk.configFile}
+															--environment-name ${aws.beanstalk.environmentName}
+															--solution-stack-name
+															'${aws.beanstalk.solutionStackName}' --application-name
+															${aws.beanstalk.applicationName} --version-label
+															${aws.beanstalk.versionLabel} --profile ${aws.profile}</echo>
+														<exec executable="aws" failonerror="true">
+															<arg
+																line="elasticbeanstalk create-environment --option-settings file://${aws.beanstalk.configFile} --environment-name ${aws.beanstalk.environmentName} --solution-stack-name '${aws.beanstalk.solutionStackName}' --application-name ${aws.beanstalk.applicationName} --version-label ${aws.beanstalk.versionLabel} --profile ${aws.profile}" />
+														</exec>
+													</try>
+													<catch>
+														<echo>Environment exists so updating</echo>
+														<echo>elasticbeanstalk update-environment
+															--option-settings file://${aws.beanstalk.configFile}
+															--environment-name ${aws.beanstalk.environmentName}
+															--solution-stack-name
+															'${aws.beanstalk.solutionStackName}' --application-name
+															${aws.beanstalk.applicationName} --version-label
+															${aws.beanstalk.versionLabel} --profile ${aws.profile}</echo>
+														<exec executable="aws" failonerror="true">
+															<arg
+																line="elasticbeanstalk update-environment --option-settings file://${aws.beanstalk.configFile} --environment-name ${aws.beanstalk.environmentName} --solution-stack-name '${aws.beanstalk.solutionStackName}' --application-name ${aws.beanstalk.applicationName} --version-label ${aws.beanstalk.versionLabel} --profile ${aws.profile}" />
+														</exec>
+													</catch>
+												</trycatch>
+
+											</then>
+											<else>
+												<echo>aws.deploy.skip was set to true or packaging is not a
+													JAR, so skipping deploy.zip</echo>
+											</else>
+										</if>
+
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<artifactId>ant</artifactId>
+										<groupId>ant</groupId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>

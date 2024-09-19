@@ -1,0 +1,23 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+	<profiles>
+		<profile>
+			<repositories>
+				<repository>
+					<id>internal.repo</id>
+					<name>Draiver Internal Repository</name>
+					<url>http://nexus.draiver.com/repository/maven-releases/</url>
+				</repository>
+				<repository>
+					<id>snapshot.repo</id>
+					<name>Draiver snapshot</name>
+					<url>http://nexus.draiver.com/repository/maven-snapshots/</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
+</settings>
