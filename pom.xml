@@ -10,11 +10,12 @@
 		<version>2.5.6</version>
 	</parent>
 
+
 	<groupId>com.draiver</groupId>
-	<artifactId>draiver-build-parent_microservice-maven</artifactId>
-	<version>0.0.21-SNAPSHOT</version>
+	<artifactId>draiver-build-parent_microservice2-maven</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>draiver-build-parent_microservice-maven</name>
+	<name>draiver-build-parent_microservice2-maven</name>
 	<description>Parent POM used to bootstrap development of Draiver Microservices</description>
 
 	<properties>
