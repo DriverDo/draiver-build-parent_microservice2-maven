@@ -13,7 +13,7 @@
 
 	<groupId>com.draiver</groupId>
 	<artifactId>draiver-build-parent_microservice2-maven</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 	<name>draiver-build-parent_microservice2-maven</name>
 	<description>Parent POM used to bootstrap development of Draiver Microservices</description>
