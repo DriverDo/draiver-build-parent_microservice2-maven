@@ -54,8 +54,8 @@
 		<dependencies>			
 			<dependency>
 				<groupId>com.draiver</groupId>
-				<artifactId>draiver-build-dependency_thirdparty-maven</artifactId>
-				<version>0.0.10</version>
+				<artifactId>draiver-build-dependency_thirdparty2-maven</artifactId>
+				<version>0.0.2-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
