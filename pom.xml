@@ -13,7 +13,7 @@
 
 	<groupId>com.draiver</groupId>
 	<artifactId>draiver-build-parent_microservice2-maven</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>draiver-build-parent_microservice2-maven</name>
 	<description>Parent POM used to bootstrap development of Draiver Microservices</description>
@@ -54,8 +54,8 @@
 		<dependencies>			
 			<dependency>
 				<groupId>com.draiver</groupId>
-				<artifactId>draiver-build-dependency_thirdparty-maven</artifactId>
-				<version>0.0.10</version>
+				<artifactId>draiver-build-dependency_thirdparty2-maven</artifactId>
+				<version>0.0.2-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -68,10 +68,6 @@
 			<groupId>io.lettuce</groupId>
 			<artifactId>lettuce-core</artifactId>
 			<!--  <version>6.1.1.RELEASE</version> -->
-		</dependency>
-		<dependency>
-			<groupId>es.moki.ratelimitj</groupId>
-			<artifactId>ratelimitj-redis</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
