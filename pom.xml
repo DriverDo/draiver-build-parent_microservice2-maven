@@ -70,10 +70,6 @@
 			<!--  <version>6.1.1.RELEASE</version> -->
 		</dependency>
 		<dependency>
-			<groupId>es.moki.ratelimitj</groupId>
-			<artifactId>ratelimitj-redis</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
